@@ -7,6 +7,7 @@
    * Flow.js is a library providing multiple simultaneous, stable and
    * resumable uploads via the HTML5 File API.
    * @param [opts]
+   * @param {Function} [opts.hookGetParams] // edit by @akkaradej
    * @param {number} [opts.chunkSize]
    * @param {bool} [opts.forceChunkSize]
    * @param {number} [opts.simultaneousUploads]
@@ -63,6 +64,9 @@
      * @type {Object}
      */
     this.defaults = {
+      hookGetParams: function(params){ // edit by @akkaradej
+        return params;
+      },
       chunkSize: 1024 * 1024,
       forceChunkSize: false,
       simultaneousUploads: 3,
@@ -1181,7 +1185,7 @@
      * @function
      */
     getParams: function () {
-      return {
+      var params = {
         flowChunkNumber: this.offset + 1,
         flowChunkSize: this.flowObj.opts.chunkSize,
         flowCurrentChunkSize: this.endByte - this.startByte,
@@ -1191,6 +1195,7 @@
         flowRelativePath: this.fileObj.relativePath,
         flowTotalChunks: this.fileObj.chunks.length
       };
+      return this.flowObj.opts.hookGetParams(params); // edit by @akkaradej
     },
 
     /**
