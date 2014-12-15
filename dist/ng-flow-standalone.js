@@ -1307,7 +1307,7 @@
         // or 'LOADING' - meaning that stuff is happening
         return 'uploading';
       } else {
-        if (this.xhr.status == 200) {
+        if (this.xhr.status == 200 || this.xhr.status == 201 || this.xhr.status == 204) { // edit by @akkaradej - status 201, 204
           // HTTP 200, perfect
           return 'success';
         } else if (this.flowObj.opts.permanentErrors.indexOf(this.xhr.status) > -1 ||
