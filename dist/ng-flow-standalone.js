@@ -1130,11 +1130,13 @@
      * @param {ProgressEvent} event
      */
     this.progressHandler = function(event) {
-      if (event.lengthComputable) {
-        $.loaded = event.loaded ;
-        $.total = event.total;
+      if( ! $.fileObj.paused){ // edit by @akkaradej
+        if (event.lengthComputable) {
+          $.loaded = event.loaded ;
+          $.total = event.total;
+        }
+        $.fileObj.chunkEvent('progress');
       }
-      $.fileObj.chunkEvent('progress');
     };
 
     /**
