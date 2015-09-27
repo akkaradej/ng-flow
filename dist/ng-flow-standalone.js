@@ -8,6 +8,7 @@
    * Flow.js is a library providing multiple simultaneous, stable and
    * resumable uploads via the HTML5 File API.
    * @param [opts]
+   * @param {Function} [opts.hookGetParams]
    * @param {number} [opts.chunkSize]
    * @param {bool} [opts.forceChunkSize]
    * @param {number} [opts.simultaneousUploads]
@@ -67,6 +68,9 @@
      * @type {Object}
      */
     this.defaults = {
+      hookGetParams: function(params){
+        return params;
+      },
       chunkSize: 1024 * 1024,
       forceChunkSize: false,
       simultaneousUploads: 3,
@@ -1205,9 +1209,36 @@
     /**
      * Get params for a request
      * @function
+     *
+     * Example: to disable chunking file
+     *
+     * flowFactory.create({
+     *   target: 'https://example.com/api', // endpoint
+     *   query: {name: 'test', price: 100}, // whatever
+     *   chunkSize: Number.MAX_VALUE,       // make sure it not separate to small chunk
+     *   testChunks: false,                 // not test chunk
+     *   hookGetParams: function(params){
+     *    return {};                        // omit FlowChunk params
+     *   }
+     * });
+     *
+     * Example: to rename FlowChunk params
+     *
+     * flowFactory.create({
+     *   target: 'https://example.com/api', // endpoint
+     *   query: {name: 'test', price: 100}, // whatever
+     *   hookGetParams: function(params){
+     *    return {
+     *      chunkNumber: params.flowChunkNumber,
+     *      chunkSize: params.flowChunkSize,
+     *      ...
+     *    };
+     *   }
+     * });
+    });
      */
     getParams: function () {
-      return {
+      var params = {
         flowChunkNumber: this.offset + 1,
         flowChunkSize: this.flowObj.opts.chunkSize,
         flowCurrentChunkSize: this.endByte - this.startByte,
@@ -1217,6 +1248,7 @@
         flowRelativePath: this.fileObj.relativePath,
         flowTotalChunks: this.fileObj.chunks.length
       };
+      return this.flowObj.opts.hookGetParams(params);
     },
 
     /**
