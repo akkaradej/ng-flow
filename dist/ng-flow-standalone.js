@@ -883,6 +883,7 @@
      * @function
      */
     cancel: function () {
+      this.paused = true;
       this.flowObj.removeFile(this);
     },
 
@@ -1151,11 +1152,13 @@
      * @param {ProgressEvent} event
      */
     this.progressHandler = function(event) {
-      if (event.lengthComputable) {
-        $.loaded = event.loaded ;
-        $.total = event.total;
+      if( ! $.fileObj.paused){
+        if (event.lengthComputable) {
+          $.loaded = event.loaded ;
+          $.total = event.total;
+        }
+        $.event('progress', event);
       }
-      $.event('progress', event);
     };
 
     /**
